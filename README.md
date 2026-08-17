@@ -16,27 +16,23 @@ Codex 风格的 **DeepSeek Harness(DSH)Web 端会话导航面板**:在对话页�
 
 ## 安装
 
-DSH Web 端插件通过 profile 的补丁层(`cordis.patch.yml`)挂载,客户端代码由宿主在运行时扫描并注入页面,无需构建 Web 产物。
+本插件是官方规范的**组合包**(`dsh.bundle` manifest + `dsh.client` 声明),纯 JavaScript、无构建步骤,推荐用官方 CLI 安装:
 
-1. 把本仓库放进 profile 的 `node_modules`(裸包名必须能被 profile 目录的 node 解析找到):
+```sh
+# 方式一:npm(发布后,用户无需任何构建授权)
+dsh plugin --profile web add dsh-conversation-navigator
 
-   ```powershell
-   # <DSH_HOME> 默认为 %USERPROFILE%\.dsh
-   git clone https://github.com/<you>/dsh-conversation-navigator `
-     "$env:USERPROFILE\.dsh\profiles\web\node_modules\dsh-conversation-navigator"
-   ```
+# 方式二:GitHub(纯 JS 包无需 prepare/allowBuilds,直接可用)
+dsh plugin --profile web add github:you/dsh-conversation-navigator
 
-   > 也可以用软链接指向任意目录:`New-Item -ItemType Junction -Path ...\node_modules\dsh-conversation-navigator -Target <repo>`
+# 方式三:本地 tarball
+pnpm pack
+dsh plugin --profile web add ./dsh-conversation-navigator-0.1.0.tgz
+```
 
-2. 在 `<DSH_HOME>\profiles\<profile>\cordis.patch.yml` 的顶层数组追加一行(见 [`example.patch.yml`](./example.patch.yml)):
+`dsh plugin` 在 profile 目录内转发给 pnpm,因此需要 **pnpm 在 PATH 上**;安装会自动把本包追加进 profile 的 `dsh.profile.bundles`,其自带的 `cordis.patch.yml` 层负责插入插件行。重启 `dsh web` 后生效,面板默认展开。
 
-   ```yaml
-   - insert:
-       - id: ui-conversation-navigator
-         name: 'dsh-conversation-navigator'
-   ```
-
-3. 重启 `dsh web`(插件集变更在启动时生效),刷新页面即可,面板默认展开。
+> 手动方式(不依赖 pnpm):把仓库放进 `<DSH_HOME>\profiles\<profile>\node_modules\dsh-conversation-navigator`,并在 profile 的 `cordis.patch.yml` 顶层数组追加 [`example.patch.yml`](./example.patch.yml) 的内容。
 
 ## 更新
 
@@ -62,7 +58,8 @@ DSH Web 端插件通过 profile 的补丁层(`cordis.patch.yml`)挂载,客户端
 lib/
   index.js   # 宿主侧空入口(纯浏览器插件)
   client.js  # 浏览器端完整实现(window.__ModuleLoader__ 模块格式)
-example.patch.yml   # composition 补丁示例
+cordis.patch.yml     # 组合包补丁层(插入插件行)
+example.patch.yml    # 手动安装时的补丁示例
 ```
 
 ## License

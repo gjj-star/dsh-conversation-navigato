@@ -1,0 +1,7 @@
+# dsh-conversation-navigator 组合包补丁层
+# 当 profile 的 dsh.profile.bundles 列出本包时,此层会被应用,
+# 向组合中插入一行浏览器插件(dsh.client row)。
+
+- insert:
+    - id: ui-conversation-navigator
+      name: 'dsh-conversation-navigator'
