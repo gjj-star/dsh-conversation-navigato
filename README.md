@@ -7,6 +7,7 @@ Codex 风格的 **DeepSeek Harness(DSH)Web 端会话导航面板**:在对话页*
 ## 功能
 
 - **按轮折叠大纲**:默认只显示"第 N 轮 + 你的问题"列表,长对话一目了然
+- **关键词过滤**:顶部搜索框只按「你的提问 + 助手实际回复文本」过滤(上下文、工具、命令、压缩、推理等不参与匹配),命中词高亮,列表文本自动定位到关键词处
 - **展开/折叠步次**:点击轮次行右侧的 `▸ N` / `▾` 展开或折叠该轮的步次明细(助手回复、工具调用、命令、压缩点等)
 - **点击定位**:点击轮次主体或步次条目,平滑滚动跳转到对话中对应位置(不改变折叠状态)
 - **加载更早 / 加载全部**:面板顶部两个按钮——「加载更早」向后翻一页、「加载全部」一键把所有历史轮次载入导航,之后可任意跳转(页面默认仍懒加载,只有点按钮才补载)
@@ -48,6 +49,7 @@ dsh plugin --profile web add ./dsh-conversation-navigator-<version>.tgz
 - 历史补载:通过 `sessions` 服务的 `binding(sessionId).session.loadOlder()` 分页向后加载,「加载全部」循环至 `hasMore=false`
 - 跳转定位:复用 DSH 聊天视图自身的稳定 DOM 锚点 `[data-chat-anchor-key]`(与产品内部 paging/scroll 定位同源),`scrollIntoView` 平滑滚动
 - 位置跟踪:捕获 `[data-conversation-scroll]` 滚动容器的 scroll 事件(节流 120ms),计算视口顶部首个可见节点
+- 关键词过滤:仅为 `user` 与 `assistant-step` 节点提取检索文本(`dialogueText`),大小写不敏感匹配,命中片段以 `<mark>` 高亮并按首个命中位置截取显示窗口
 - 样式:按钮/图标复用 `@deepseek-ai/dsh-client-ui-primitives`;面板容器自建 `<style>` 注入,颜色使用 `--dsw-*` 主题 token;插件卸载时随 fiber 清理
 
 ## 兼容性说明
