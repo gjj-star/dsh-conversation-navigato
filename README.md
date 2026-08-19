@@ -27,7 +27,7 @@ Codex 风格的 **DeepSeek Harness(DSH)Web 端会话导航面板**:在对话页*
 dsh plugin --profile web add dsh-conversation-navigator
 
 # 方式二:GitHub(纯 JS 包无需 prepare/allowBuilds,直接可用)
-dsh plugin --profile web add github:gjj-star/dsh-conversation-navigato
+dsh plugin --profile web add github:gjj-star/dsh-conversation-navigator
 
 # 方式三:本地 tarball
 pnpm pack
