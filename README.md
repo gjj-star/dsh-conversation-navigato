@@ -2,7 +2,7 @@
 
 Codex 风格的 **DeepSeek Harness(DSH)Web 端会话导航面板**:在对话页**右侧**悬浮展示按轮折叠的对话大纲,点击任意节点平滑跳转,滚动对话时实时高亮当前阅读位置,步次徽标配色与内置"轨迹"视图统一。
 
-纯浏览器插件(无宿主行为)、纯 JavaScript、零构建、零 npm 依赖(按钮/图标复用 DSH 内核 seed 的官方 primitives)。
+纯浏览器插件(无宿主行为)、纯 JavaScript、零构建、零 npm 依赖(按钮/Tooltip 复用 DSH 内核 seed 的官方 primitives)。
 
 ## 功能
 
@@ -18,7 +18,7 @@ Codex 风格的 **DeepSeek Harness(DSH)Web 端会话导航面板**:在对话页*
 - **右侧定位**:面板锚定视口右侧,收起/展开左侧边栏时纹丝不动
 - **回到最新 / 全部折叠**:面板底部两个快捷按钮
 - **轨迹配色**:用户/插话 = 业务蓝、上下文 = 成功绿、助手 = 紫罗兰、工具 = 琥珀、压缩 = 中性灰(取自 `dsh-client-ui-trajectory` 的 kindTag 主题 token,自动适配明暗主题)
-- **DSH 原生按钮与图标**:所有操作按钮复用官方 `Button` 组件与 `ic_ds_*` 图标集,与 DSH 界面完全同款
+- **DSH 原生风格**:操作按钮复用官方 `Button`/`Tooltip` 组件与官方图标(搜索、关闭);其余操作图标(导航、加载更早、加载全部、回到最新、全部折叠、切换轮次等)为按 DSH 描边风格手绘的内联 SVG,`currentColor` 自动适配明暗主题
 - 切换工作区/会话自动跟随并重建大纲
 
 ## 安装
@@ -43,7 +43,7 @@ dsh plugin --profile web add ./dsh-conversation-navigator-<version>.tgz
 
 ## 更新
 
-修改 `lib/client.js` 后重启 `dsh web` 即可;插件没有持久状态,展开/折叠状态仅存于页面会话内。
+修改 `lib/client.js` 后重启 `dsh web` 即可;插件没有持久状态,展开/折叠、显示/隐藏轮次、搜索关键词等界面状态仅存于页面会话内。
 
 ## 工作原理
 
@@ -53,7 +53,9 @@ dsh plugin --profile web add ./dsh-conversation-navigator-<version>.tgz
 - 跳转定位:复用 DSH 聊天视图自身的稳定 DOM 锚点 `[data-chat-anchor-key]`(与产品内部 paging/scroll 定位同源),`scrollIntoView` 平滑滚动
 - 位置跟踪:捕获 `[data-conversation-scroll]` 滚动容器的 scroll 事件(节流 120ms),计算视口顶部首个可见节点
 - 关键词过滤:仅为 `user` 与 `assistant-step` 节点提取检索文本(`dialogueText`),大小写不敏感匹配,命中片段以 `<mark>` 高亮并按首个命中位置截取显示窗口
-- 样式:按钮/图标复用 `@deepseek-ai/dsh-client-ui-primitives`;面板容器自建 `<style>` 注入,颜色使用 `--dsw-*` 主题 token;插件卸载时随 fiber 清理
+- 悬停全文:轮次头气泡读取 `fullDialogueText`(用户节点全部文本块拼接),用 `Tooltip` 展示并限宽 340px
+- 显示/隐藏轮次:头部按钮切换 `turnsHidden`,隐藏时仅把轮次头标题替换为轨迹徽标(`titleNode` 策略),分组结构不变;搜索框展开时按钮让位
+- 样式:`Button`/`Tooltip`/搜索与关闭图标复用 `@deepseek-ai/dsh-client-ui-primitives`,其余图标为内联 SVG;面板容器自建 `<style>` 注入,颜色使用 `--dsw-*` 主题 token;插件卸载时随 fiber 清理
 
 ## 兼容性说明
 
